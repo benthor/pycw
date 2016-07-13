@@ -2,6 +2,9 @@
 
 Reads characters from stdin, generates morse (cw) audio for each legal character using pyaudio before echoing it back out.
 
+**NOTE: I haven't triple-checked the character to code mapping. It _feels_ correct, but no guarantees.**
+
+
 ## Idea
 
 I've long wanted to investigate if I can train my subconscious to understand morse signals by constantly exposing myself to the strongly correlated stimuli of the heard signal and the observed printed character. Someone should write a twitter or irc client with this feature.
