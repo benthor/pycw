@@ -21,6 +21,26 @@ or
 cat code_group1.txt | python3 cw.py
 ```
 
+You can also use the dumb included helper script "groups.py" to generate random code groups from the characters found in the first argument for group training. Defaults to 10 groups of 5 characters each.
+
+```
+python3 groups.py "ukm" | python3 cw.py
+```
+
+Sample output:
+
+```
+kkkuu
+ukmkm
+kukuk
+umuku
+ummkm
+kmkuu
+kmkmu
+kukku
+mkuuu
+kmmmm
+```
 ## Requirements
 
 * python (only tested with python3.5)

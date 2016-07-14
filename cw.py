@@ -66,6 +66,8 @@ chars = {
 
 
 # sigmodial smoothing function. factor determines steepness, cutoff is sig(t) value beyond which smoothing will cease, offset moves curve along t axis
+# not sure this is the way to do it but it produces nicer beeps anyway
+# DB4UM points out that smoothing is usually done with "raised cosine". TODO maybe
 def sigsmooth(samples, factor=0.05, cutoff=0.95, offset=5):
     tmp = 0
     l = len(samples)
@@ -82,17 +84,19 @@ def sigsmooth(samples, factor=0.05, cutoff=0.95, offset=5):
 
 
 def char2sample(char):
-    tau = math.pi * 2
+    tau = math.pi * 2 # see http://tauday.com/tau-manifesto
     stepsize = tau * f / fs # how many samples for one full sine wave at frequency f
     samples = []
     for press in chars[char]:
         if press == 1:
+            # dot
             samples = np.append(samples, sigsmooth([math.sin(x*stepsize) for x in range(int(fs*atom))]))
         elif press == 2:
+            # dash
             samples = np.append(samples, sigsmooth([math.sin(x*stepsize) for x in range(int(fs*atom*3))]))
-        else:
-            samples = np.append(samples, [0 for x in range(int(fs*atom))])
+        # intra character space, length of one dot
         samples = np.append(samples, [0 for x in range(int(fs*atom))])
+    # inter character space, length of one dash
     samples = np.append(samples, [0 for x in range(int(fs*atom*3))])
     return samples.astype(np.float32)
 
@@ -106,7 +110,7 @@ stream = p.open(format=pyaudio.paFloat32,
                 output=True)
 
 
-line = stdin.readline()
+line = stdin.readline().strip()
 while line:
     for char in line:
         char = char.lower()
@@ -115,9 +119,10 @@ while line:
             stream.write(volume*samples, len(samples))
             print(char, end='', flush=True)
         else:
+            # non-coded characters replaced by silence (space), length of one dash
             stream.write(volume*char2sample(' '))
             print("_", end='', flush=True)
-    line = stdin.readline()
+    line = stdin.readline().strip()
     # short break
     stream.write(volume*char2sample(' '))
     # print newline
