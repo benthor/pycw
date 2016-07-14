@@ -1,6 +1,6 @@
 # pycw
 
-Reads characters from stdin, generates morse (cw) audio for each legal character using pyaudio before echoing it back out.
+Reads characters from stdin, synthesizes morse (cw) audio for each legal character using pyaudio before echoing it back out.
 
 **NOTE: I haven't triple-checked the character to code mapping. It _feels_ correct, but no guarantees.**
 
@@ -49,14 +49,15 @@ kmmmm
 
 ## Issues/ToDos
 
-* clean up the code
+* old version was missing essential characters and pauses were too long (fixed)
+* clean up & document the code (somewhat fixed)
 * command line flags for WPM configuration missing (for now, edit the top of the file)
 * letter/word spacing currently hardcoded
 * sometimes audio stream terminates early. code includes dirty hacks to try and prevent this
 
 ## Internals
 
-* native sine signal generation (no fucking wav files like every other tool out there, ugh)
+* native sine signal synthesis (no fucking wav files like every other tool out there, ugh)
 * logistic sigmoid function for edge smoothing
 * treats newlines as whitespace (acoustically)
 * prints "_" for non-translatable characters, treats as whitespace
