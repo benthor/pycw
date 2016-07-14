@@ -6,8 +6,8 @@ from sys import stdin
 WPM = 20
 
 
-# duration atom, length of one dot and length of intra-character gaps in senconds
-#atom = 0.05
+# duration atom, length of one dot and length of intra-character gaps in seconds
+# atom = 0.05
 # see https://en.wikipedia.org/wiki/Morse_code#/Speed_in_words_per_minute
 atom = 1.2 / WPM
 
@@ -56,6 +56,10 @@ chars = {
     '8' : [2, 2, 2, 1, 1],
     '9' : [2, 2, 2, 2, 1],
     ' ' : [0, 0, 0, 0],
+    '.' : [1, 2, 1, 2, 1, 2],
+    ',' : [2, 2, 1, 1, 2, 2],
+    '?' : [1, 1, 2, 2, 1, 1],
+    '!' : [2, 1, 2, 1, 2, 2],
 }
 
 
