@@ -1,7 +1,7 @@
 import pyaudio
 import numpy as np
 import math
-from sys import stdin
+from sys import stdin, argv #TODO arguments for wpm, tone freq
 
 WPM = 20
 
@@ -62,9 +62,20 @@ chars = {
     '!' : [2, 1, 2, 1, 2, 2],
     '=' : [2, 1, 1, 1, 2],
     '/' : [2, 1, 1, 2, 1],
+    '(' : [2, 1, 2, 2, 1],
+    ')' : [2, 1, 2, 2, 1, 2],
+    ';' : [2, 1, 2, 1, 2, 1],
+    '+' : [1, 2, 1, 2, 1],
+    '-' : [2, 1, 1, 1, 1, 2],
+    '"' : [1, 2, 1, 1, 2, 1],
+    '$' : [1, 1, 1, 2, 1, 1, 2],
+    '@' : [1, 2, 2, 1, 2, 1],
+
+# These are the special control codes used in W1AW code practice text files
+
+    '\x0089' : [2, 1, 1, 1, 2],
+    '\x0083' : [1, 2, 1, 1, 1],
 }
-
-
 
 
 # sigmodial smoothing function. factor determines steepness, cutoff is sig(t) value beyond which smoothing will cease, offset moves curve along t axis
