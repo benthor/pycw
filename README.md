@@ -2,8 +2,6 @@
 
 Reads characters from stdin, synthesizes morse (cw) audio for each legal character using pyaudio before echoing it back out.
 
-**NOTE: I haven't triple-checked the character to code mapping. It _feels_ correct, but no guarantees.**
-
 
 ## Idea
 
@@ -12,19 +10,25 @@ I've long wanted to investigate if I can train my subconscious to understand mor
 ## Usage
 
 ```
-echo "This is a test" | python3 cw.py
+cw.py <volume in range [0.0, 1.0]> <sample frequency in Hz> <tone frequency in Hz> <words per minute>
+```
+
+This gives you a half-volume, 44000 Hz sampled tone of 800 Hz at 20 WPM:
+
+```
+echo "This is a test" | python3 cw.py 0.5 44000 800 20
 ```
 
 or
 
 ```
-cat code_group1.txt | python3 cw.py
+cat code_group1.txt | python3 cw.py 0.5 44000 800 20
 ```
 
 You can also use the dumb included helper script "groups.py" to generate random code groups from the characters found in the first argument for group training. Defaults to 10 groups of 5 characters each.
 
 ```
-python3 groups.py "ukm" | python3 cw.py
+python3 groups.py "ukm" | python3 cw.py 0.5 44000 800 20
 ```
 
 Sample output:
@@ -49,9 +53,8 @@ kmmmm
 
 ## Issues/ToDos
 
-* old version was missing essential characters and pauses were too long (fixed)
 * clean up & document the code (somewhat fixed)
-* command line flags for WPM configuration missing (for now, edit the top of the file)
+* command line flags for WPM configuration missing (somewhat fixed)
 * letter/word spacing currently hardcoded
 * sometimes audio stream terminates early. code includes dirty hacks to try and prevent this
 

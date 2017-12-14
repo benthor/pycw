@@ -1,20 +1,36 @@
 import pyaudio
 import numpy as np
 import math
+import argparse
 from sys import stdin
 
-WPM = 20
 
+# Instantiate the parser
+parser = argparse.ArgumentParser(description='PyCW - the Morse Code Source')
+
+# Volume Argument
+parser.add_argument('volume', type=float, help='Volume in range [0.0, 1.0]')
+
+# Sampling Rate Argument
+parser.add_argument('fs', type=int, help='Sampling rate, Hz, must be integer')
+
+# Tone Frequency Argument
+parser.add_argument('ft', type=float, help='Code tone frequency, Hz')
+
+# WPM Argument
+parser.add_argument('wpm', type=int, help='Words-per-minute')
+
+args = parser.parse_args()
 
 # duration atom, length of one dot and length of intra-character gaps in seconds
 # atom = 0.05
 # see https://en.wikipedia.org/wiki/Morse_code#/Speed_in_words_per_minute
-atom = 1.2 / WPM
+atom = 1.2 / args.wpm
 
 
-volume = 0.5     # range [0.0, 1.0]
-fs = 44100       # sampling rate, Hz, must be integer
-f = 800.0        # sine frequency, Hz, may be float
+#volume = 0.5     # range [0.0, 1.0]
+#fs = 44100       # sampling rate, Hz, must be integer
+#f = 800.0        # sine frequency, Hz, may be float
 
 
 
@@ -62,14 +78,26 @@ chars = {
     '!' : [2, 1, 2, 1, 2, 2],
     '=' : [2, 1, 1, 1, 2],
     '/' : [2, 1, 1, 2, 1],
+    '(' : [2, 1, 2, 2, 1],
+    ')' : [2, 1, 2, 2, 1, 2],
+    ';' : [2, 1, 2, 1, 2, 1],
+    '+' : [1, 2, 1, 2, 1],
+    '-' : [2, 1, 1, 1, 1, 2],
+    '"' : [1, 2, 1, 1, 2, 1],
+    '$' : [1, 1, 1, 2, 1, 1, 2],
+    '@' : [1, 2, 2, 1, 2, 1],
 }
 
 
+# sigmodial smoothing function
+# factor determines steepness, cutoff is sig(t) value beyond
+# which smoothing will cease, offset moves curve along t axis
+# not sure this is the way to do it but it produces nicer beeps
+# anyway
+# DB4UM points out that smoothing is usually done with
+# "raised cosine".
+# TODO maybe
 
-
-# sigmodial smoothing function. factor determines steepness, cutoff is sig(t) value beyond which smoothing will cease, offset moves curve along t axis
-# not sure this is the way to do it but it produces nicer beeps anyway
-# DB4UM points out that smoothing is usually done with "raised cosine". TODO maybe
 def sigsmooth(samples, factor=0.05, cutoff=0.95, offset=5):
     tmp = 0
     l = len(samples)
@@ -87,19 +115,19 @@ def sigsmooth(samples, factor=0.05, cutoff=0.95, offset=5):
 
 def char2sample(char):
     tau = math.pi * 2 # see http://tauday.com/tau-manifesto
-    stepsize = tau * f / fs # how many samples for one full sine wave at frequency f
+    stepsize = tau * args.ft / args.fs # how many samples for one full sine wave at frequency f
     samples = []
     for press in chars[char]:
         if press == 1:
             # dot
-            samples = np.append(samples, sigsmooth([math.sin(x*stepsize) for x in range(int(fs*atom))]))
+            samples = np.append(samples, sigsmooth([math.sin(x*stepsize) for x in range(int(args.fs*atom))]))
         elif press == 2:
             # dash
-            samples = np.append(samples, sigsmooth([math.sin(x*stepsize) for x in range(int(fs*atom*3))]))
+            samples = np.append(samples, sigsmooth([math.sin(x*stepsize) for x in range(int(args.fs*atom*3))]))
         # intra character space, length of one dot
-        samples = np.append(samples, [0 for x in range(int(fs*atom))])
+        samples = np.append(samples, [0 for x in range(int(args.fs*atom))])
     # inter character space, length of one dash
-    samples = np.append(samples, [0 for x in range(int(fs*atom*3))])
+    samples = np.append(samples, [0 for x in range(int(args.fs*atom*3))])
     return samples.astype(np.float32)
 
 
@@ -108,7 +136,7 @@ p = pyaudio.PyAudio()
 # for paFloat32 sample values must be in range [-1.0, 1.0]
 stream = p.open(format=pyaudio.paFloat32,
                 channels=1,
-                rate=fs,
+                rate=args.fs,
                 output=True)
 
 
@@ -118,21 +146,21 @@ while line:
         char = char.lower()
         if char in chars.keys():
             samples = char2sample(char)
-            stream.write(volume*samples, len(samples))
+            stream.write(args.volume*samples, len(samples))
             print(char, end='', flush=True)
         else:
             # non-coded characters replaced by silence (space), length of one dash
-            stream.write(volume*char2sample(' '))
+            stream.write(args.volume*char2sample(' '))
             print("_", end='', flush=True)
     line = stdin.readline().strip()
     # short break
-    stream.write(volume*char2sample(' '))
+    stream.write(args.volume*char2sample(' '))
     # print newline
     print()
 
 # HACK: prevent early closing of stream
-stream.write(volume*char2sample(' '))
-stream.write(volume*char2sample(' '))
+stream.write(args.volume*char2sample(' '))
+stream.write(args.volume*char2sample(' '))
     
 
 stream.stop_stream()
