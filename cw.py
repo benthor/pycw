@@ -88,6 +88,8 @@ chars = {
     '@' : [1, 2, 2, 1, 2, 1],
 }
 
+#def prosign-chunker(line, size):
+#    return (line[pos:pos+size] for pos in xrange(0, len(line), size)
 
 # sigmodial smoothing function
 # factor determines steepness, cutoff is sig(t) value beyond

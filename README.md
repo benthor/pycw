@@ -5,7 +5,7 @@ Reads characters from stdin, synthesizes morse (cw) audio for each legal charact
 
 ## Idea
 
-I've long wanted to investigate if I can train my subconscious to understand morse signals by constantly exposing myself to the strongly correlated stimuli of the heard signal and the observed printed character. Someone should write a twitter or irc client with this feature.
+I cannot get ARRL CW broadcasts in my garage, so I took this code from Benthor to modify it to play out on a Raspberry Pi Zero. Someone should write a twitter or irc client with this feature.
 
 ## Usage
 
@@ -65,4 +65,4 @@ kmmmm
 * treats newlines as whitespace (acoustically)
 * prints "_" for non-translatable characters, treats as whitespace
 
-## Fork me!
+## Fork me too!
